@@ -389,17 +389,7 @@ elif choice == "Camera":
                     2
                 )
 
-            return av.VideoFrame.from_ndarray(img, format="bgr24")
-
-    webrtc_streamer(
-        key="drowsiness-camera",
-        video_processor_factory=DrowsinessProcessor,
-        media_stream_constraints={
-            "video": True,
-            "audio": False
-        },
-        async_processing=True
-    )        
+            return av.VideoFrame.from_ndarray(img, format="bgr24")       
 # ---------------- URL ----------------
 
 elif choice == "URL":
