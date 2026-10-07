@@ -2,12 +2,14 @@ import streamlit as st
 import cv2
 import numpy as np
 import dlib
-import os
 from imutils import face_utils
 from scipy.spatial import distance
 import tempfile
 # import winsound
 COUNTER = 0
+import os
+import bz2
+import urllib.request
 
 
 # ---------------- PAGE CONFIG ----------------
@@ -20,14 +22,48 @@ st.set_page_config(
 # ---------------- DLIB ----------------
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-detector = dlib.get_frontal_face_detector()
-
-predictor_path = os.path.join(
+MODEL_PATH = os.path.join(
     BASE_DIR,
     "shape_predictor_68_face_landmarks.dat"
 )
 
-predictor = dlib.shape_predictor(predictor_path)
+MODEL_URL = "https://dlib.net/files/shape_predictor_68_face_landmarks.dat.bz2"
+
+# Download and extract the model if it does not exist
+if not os.path.exists(MODEL_PATH):
+
+    st.info("Downloading facial landmark model... Please wait.")
+
+    compressed_path = os.path.join(
+        BASE_DIR,
+        "shape_predictor_68_face_landmarks.dat.bz2"
+    )
+
+    urllib.request.urlretrieve(
+        MODEL_URL,
+        compressed_path
+    )
+
+    with bz2.open(compressed_path, "rb") as source:
+        with open(MODEL_PATH, "wb") as target:
+            target.write(source.read())
+
+    os.remove(compressed_path)
+
+detector = dlib.get_frontal_face_detector()
+
+predictor = dlib.shape_predictor(MODEL_PATH)
+
+# BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# detector = dlib.get_frontal_face_detector()
+
+# predictor_path = os.path.join(
+#     BASE_DIR,
+#     "shape_predictor_68_face_landmarks.dat"
+# )
+
+# predictor = dlib.shape_predictor(predictor_path)
 # ---------------- EAR FUNCTION ----------------
 
 def calculate_EAR(eye):
