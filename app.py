@@ -5,7 +5,7 @@ import dlib
 from imutils import face_utils
 from scipy.spatial import distance
 import tempfile
-import winsound
+# import winsound
 COUNTER = 0
 
 
@@ -128,8 +128,9 @@ def detect_drowsiness(frame):
 
             # PLAY ONLY ONCE
             if COUNTER == 20:
+                st.warning("⚠️ Drowsiness detected! Please take a break.")
 
-                winsound.Beep(2500, 1000)
+                # winsound.Beep(2500, 1000)
 
         else:
 
