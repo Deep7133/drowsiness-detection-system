@@ -51,6 +51,8 @@ if not os.path.exists(MODEL_PATH):
     os.remove(compressed_path)
 
 detector = dlib.get_frontal_face_detector()
+st.write("Dlib version:", dlib.__version__)
+st.write("Model size:", os.path.getsize(MODEL_PATH))
 
 predictor = dlib.shape_predictor(MODEL_PATH)
 
