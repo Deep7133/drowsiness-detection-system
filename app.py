@@ -144,35 +144,15 @@ def detect_drowsiness(frame):
 
        # LABEL
 
-        global COUNTER
-
         if ear < 0.22:
 
-            COUNTER += 1
-
-        else:
-
-            COUNTER = 0
-
-
-        if COUNTER >= 20:
-
             label = "DROWSY ALERT!"
-
             color = (0,0,255)
-
-            # PLAY ONLY ONCE
-            if COUNTER == 20:
-                st.warning("⚠️ Drowsiness detected! Please take a break.")
-
-                # winsound.Beep(2500, 1000)
-
+        
         else:
-
+        
             label = "AWAKE"
-
             color = (0,255,0)
-
         # TEXT
         cv2.putText(
             frame,
