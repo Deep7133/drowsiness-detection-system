@@ -318,77 +318,19 @@ elif choice == "Video":
 # ---------------- CAMERA ----------------
 elif choice == "Camera":
 
-    st.subheader("📷 Real-Time Drowsiness Detection")
+    picture = st.camera_input("Take a picture")
 
-    class DrowsinessProcessor(VideoProcessorBase):
+    if picture is not None:
 
-        def __init__(self):
-            self.counter = 0
+        bytes_data = picture.getvalue()
 
-        def recv(self, frame):
-            img = frame.to_ndarray(format="bgr24")
-            gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        np_array = np.frombuffer(bytes_data, np.uint8)
 
-            faces = detector(gray)
+        img = cv2.imdecode(np_array, cv2.IMREAD_COLOR)
 
-            for face in faces:
-                landmarks = predictor(gray, face)
-                shape = face_utils.shape_to_np(landmarks)
+        result = detect_drowsiness(img)
 
-                left_eye = shape[42:48]
-                right_eye = shape[36:42]
-
-                left_ear = (
-                    distance.euclidean(left_eye[1], left_eye[5]) +
-                    distance.euclidean(left_eye[2], left_eye[4])
-                ) / (2 * distance.euclidean(left_eye[0], left_eye[3]))
-
-                right_ear = (
-                    distance.euclidean(right_eye[1], right_eye[5]) +
-                    distance.euclidean(right_eye[2], right_eye[4])
-                ) / (2 * distance.euclidean(right_eye[0], right_eye[3]))
-
-                ear = (left_ear + right_ear) / 2.0
-
-                if ear < 0.22:
-                    self.counter += 1
-                else:
-                    self.counter = 0
-
-                if self.counter >= 20:
-                    status = "DROWSY"
-                    color = (0, 0, 255)
-                else:
-                    status = "AWAKE"
-                    color = (0, 255, 0)
-
-                cv2.putText(
-                    img,
-                    status,
-                    (50, 50),
-                    cv2.FONT_HERSHEY_SIMPLEX,
-                    1,
-                    color,
-                    3
-                )
-
-                cv2.putText(
-                    img,
-                    f"EAR: {ear:.2f}",
-                    (50, 90),
-                    cv2.FONT_HERSHEY_SIMPLEX,
-                    0.7,
-                    color,
-                    2
-                )
-
-                cv2.rectangle(
-                    img,
-                    (face.left(), face.top()),
-                    (face.right(), face.bottom()),
-                    (255, 0, 255),
-                    2
-                )      
+        st.image(result, channels="BGR")     
 # ---------------- URL ----------------
 
 elif choice == "URL":
