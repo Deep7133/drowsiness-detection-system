@@ -59,7 +59,7 @@ def load_dlib_models(model_path):
     return detector, predictor
 
 
-detector, predictor = load_dlib_models(MODEL_PATH))
+detector, predictor = load_dlib_models(MODEL_PATH)
 
 # ---------------- EAR FUNCTION ----------------
 
