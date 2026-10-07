@@ -1,5 +1,5 @@
 streamlit
-dlib
+dlib-bin
 opencv-python-headless
 numpy
 imutils
