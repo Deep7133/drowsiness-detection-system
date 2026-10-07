@@ -12,6 +12,7 @@ import bz2
 import urllib.request
 
 
+
 # ---------------- PAGE CONFIG ----------------
 
 st.set_page_config(
@@ -387,9 +388,7 @@ elif choice == "Camera":
                     (face.right(), face.bottom()),
                     (255, 0, 255),
                     2
-                )
-
-            return av.VideoFrame.from_ndarray(img, format="bgr24")       
+                )      
 # ---------------- URL ----------------
 
 elif choice == "URL":
