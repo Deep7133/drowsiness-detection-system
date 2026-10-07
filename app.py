@@ -50,22 +50,17 @@ if not os.path.exists(MODEL_PATH):
 
     os.remove(compressed_path)
 
-detector = dlib.get_frontal_face_detector()
-st.write("Dlib version:", dlib.__version__)
-st.write("Model size:", os.path.getsize(MODEL_PATH))
+@st.cache_resource
+def load_dlib_models(model_path):
 
-predictor = dlib.shape_predictor(MODEL_PATH)
+    detector = dlib.get_frontal_face_detector()
+    predictor = dlib.shape_predictor(model_path)
 
-# BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    return detector, predictor
 
-# detector = dlib.get_frontal_face_detector()
 
-# predictor_path = os.path.join(
-#     BASE_DIR,
-#     "shape_predictor_68_face_landmarks.dat"
-# )
+detector, predictor = load_dlib_models(MODEL_PATH))
 
-# predictor = dlib.shape_predictor(predictor_path)
 # ---------------- EAR FUNCTION ----------------
 
 def calculate_EAR(eye):
@@ -323,31 +318,32 @@ elif choice == "Video":
 
 elif choice == "Camera":
 
-    run = st.checkbox("Start Camera")
+    st.subheader("📷 Camera Drowsiness Detection")
 
-    frame_window = st.empty()
+    picture = st.camera_input("Take a picture")
 
-    cap = cv2.VideoCapture(0)
+    if picture is not None:
 
-    while run:
+        bytes_data = picture.getvalue()
 
-        ret, frame = cap.read()
-
-        if not ret:
-            st.error("Camera not working")
-            break
-
-        result = detect_drowsiness(frame)
-
-        frame_window.image(
-            result,
-            channels="BGR"
+        np_array = np.frombuffer(
+            bytes_data,
+            np.uint8
         )
 
-    cap.release()
+        img = cv2.imdecode(
+            np_array,
+            cv2.IMREAD_COLOR
+        )
 
-    # cv2.destroyAllWindows()
+        result = detect_drowsiness(img)
 
+        st.image(
+            result,
+            channels="BGR",
+            width=900
+        )
+        
 # ---------------- URL ----------------
 
 elif choice == "URL":
