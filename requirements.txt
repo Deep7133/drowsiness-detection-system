@@ -1,8 +1,6 @@
-
 streamlit
+dlib-bin==20.0.1.post1
 opencv-python-headless
-dlib
 numpy
 imutils
 scipy
-Pillow
