@@ -21,6 +21,12 @@ st.set_page_config(
 )
 
 # ---------------- DLIB ----------------
+import os
+import bz2
+import urllib.request
+import dlib
+import streamlit as st
+
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 MODEL_PATH = os.path.join(
@@ -30,37 +36,38 @@ MODEL_PATH = os.path.join(
 
 MODEL_URL = "https://dlib.net/files/shape_predictor_68_face_landmarks.dat.bz2"
 
-# Download and extract the model if it does not exist
-if not os.path.exists(MODEL_PATH):
+COMPRESSED_PATH = MODEL_PATH + ".bz2"
 
-    st.info("Downloading facial landmark model... Please wait.")
-
-    compressed_path = os.path.join(
-        BASE_DIR,
-        "shape_predictor_68_face_landmarks.dat.bz2"
-    )
-
-    urllib.request.urlretrieve(
-        MODEL_URL,
-        compressed_path
-    )
-
-    with bz2.open(compressed_path, "rb") as source:
-        with open(MODEL_PATH, "wb") as target:
-            target.write(source.read())
-
-    os.remove(compressed_path)
 
 @st.cache_resource
-def load_dlib_models(model_path):
+def load_dlib_models():
 
+    # Download a fresh model on each uncached initialization
+    if not os.path.exists(MODEL_PATH):
+        st.info("Downloading facial landmark model... Please wait.")
+
+        urllib.request.urlretrieve(MODEL_URL, COMPRESSED_PATH)
+
+        try:
+            with bz2.open(COMPRESSED_PATH, "rb") as source:
+                with open(MODEL_PATH, "wb") as target:
+                    while True:
+                        chunk = source.read(1024 * 1024)
+                        if not chunk:
+                            break
+                        target.write(chunk)
+        finally:
+            if os.path.exists(COMPRESSED_PATH):
+                os.remove(COMPRESSED_PATH)
+
+    # Validate that the model can actually be loaded
     detector = dlib.get_frontal_face_detector()
-    predictor = dlib.shape_predictor(model_path)
+    predictor = dlib.shape_predictor(MODEL_PATH)
 
     return detector, predictor
 
 
-detector, predictor = load_dlib_models(MODEL_PATH)
+detector, predictor = load_dlib_models()
 
 # ---------------- EAR FUNCTION ----------------
 
